@@ -18,12 +18,13 @@ namespace XamFormsCardIO.iOS
 		{
 			base.ViewDidLoad ();
 
+			var paymentDelegate = new CardIOPaymentViewControllerDg();
+
 			// Create and Show the View Controller
-			var paymentViewController = new CardIOPaymentViewController();
+			var paymentViewController = new CardIOPaymentViewController(paymentDelegate);
 
 			// Display the card.io interface
 			PresentViewController(paymentViewController,true, null);
-
 
 		}
 
@@ -32,21 +33,31 @@ namespace XamFormsCardIO.iOS
 			base.ViewDidAppear (animated);
 		}
 			
+	}
 
-		public void UserDidCancelPaymentViewController (CardIOPaymentViewController paymentViewController)
+	public class CardIOPaymentViewControllerDg: CardIOPaymentViewControllerDelegate
+	{
+	
+		public CardIOPaymentViewControllerDg(){
+		}
+
+		public override void UserDidCancelPaymentViewController (CardIOPaymentViewController paymentViewController)
 		{
 			Console.WriteLine("Scanning Canceled!");
 		}
-		public void UserDidProvideCreditCardInfo (CreditCardInfo cardInfo, CardIOPaymentViewController paymentViewController)
+		public override void UserDidProvideCreditCardInfo (CreditCardInfo cardInfo, CardIOPaymentViewController paymentViewController)
 		{
 			if (cardInfo == null) {
 				Console.WriteLine("Scanning Canceled!");
 			} else {
 				Console.WriteLine("Card Scanned: " + cardInfo.CardNumber);
-			}	
+			}   
 
 			paymentViewController.DismissViewController(true, null);        
 		}
+
 	}
+
+
 }
 
