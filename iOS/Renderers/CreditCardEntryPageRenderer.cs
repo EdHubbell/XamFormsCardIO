@@ -18,6 +18,13 @@ namespace XamFormsCardIO.iOS
 		{
 			base.ViewDidLoad ();
 
+
+		}
+
+		public override void ViewDidAppear (bool animated)
+		{
+			base.ViewDidAppear (animated);
+
 			var paymentDelegate = new CardIOPaymentViewControllerDg();
 
 			// Create and Show the View Controller
@@ -26,11 +33,6 @@ namespace XamFormsCardIO.iOS
 			// Display the card.io interface
 			PresentViewController(paymentViewController,true, null);
 
-		}
-
-		public override void ViewDidAppear (bool animated)
-		{
-			base.ViewDidAppear (animated);
 		}
 			
 	}
