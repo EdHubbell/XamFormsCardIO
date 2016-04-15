@@ -4,15 +4,14 @@ using Xamarin.Forms.Platform.iOS;
 using Card.IO;
 
 
-[assembly:ExportRenderer (typeof(MovePedestal.CreditCardEntryPage), typeof(MovePedestal.iOS.CreditCardEntryPageRenderer))]
+[assembly:ExportRenderer (typeof(XamFormsCardIO.CreditCardEntryPage), typeof(XamFormsCardIO.iOS.CreditCardEntryPageRenderer))]
 
-namespace MovePedestal.iOS
+namespace XamFormsCardIO.iOS
 {
 	public class CreditCardEntryPageRenderer: PageRenderer
 	{
 		public CreditCardEntryPageRenderer ()
 		{
-
 		}
 
 		public override void ViewDidLoad ()
@@ -20,10 +19,10 @@ namespace MovePedestal.iOS
 			base.ViewDidLoad ();
 
 			// Create and Show the View Controller
-			//var paymentViewController = new CardIOPaymentViewController (base.NativeView);
+			var paymentViewController = new CardIOPaymentViewController();
 
 			// Display the card.io interface
-			//PresentViewController(paymentViewController, true);
+			PresentViewController(paymentViewController,true, null);
 
 
 		}
@@ -31,10 +30,8 @@ namespace MovePedestal.iOS
 		public override void ViewDidAppear (bool animated)
 		{
 			base.ViewDidAppear (animated);
-
-
 		}
-
+			
 
 		public void UserDidCancelPaymentViewController (CardIOPaymentViewController paymentViewController)
 		{

@@ -9,26 +9,27 @@ namespace XamFormsCardIO
 {
 	public class StartPage : ContentPage
 	{
-		Button btnGoogleLogInText;
-		Button btnAddPaymentMethod;
+		Button btnScanCreditCard;
+		Entry txtCreditCardNumber;
 
 		public StartPage ()
 		{
 			RenderContent();
 
-			btnAddPaymentMethod.Clicked += (sender, args) =>
+			btnScanCreditCard.Clicked += (sender, args) =>
 			{
 				Navigation.PushModalAsync (new CreditCardEntryPage ());
 			};
 
+			MessagingCenter.Subscribe<CreditCard_PCL> (this, "AndroidCreditCardReceived", (sender) => {
+				// Do something whenever the "AndroidCreditCardReceived" message is sent.
+				// We could fill in CCV and expiration date things here, whatever else we need.
+				// This is enough to show capability, however.
+				txtCreditCardNumber.Text = sender.cardNumber;
+			});
 
 		}
 
-
-		//		private async void TakePhoto()
-		//		{
-		//			var mediaFile = await CrossMedia.Current.TakePhotoAsync(new Plugin.Media.Abstractions.StoreCameraMediaOptions{});
-		//		}
 
 		private void RenderContent() {
 
@@ -43,8 +44,8 @@ namespace XamFormsCardIO
 			ContentView header = new ContentView() { BackgroundColor = Color.Blue, HorizontalOptions = LayoutOptions.FillAndExpand, Padding = new Thickness(0, 110, 0, 0) };
 			rootLayout.Children.Add(header);
 
-			btnAddPaymentMethod = new Button() {
-				Text = "  Add Payment Method ", 
+			btnScanCreditCard = new Button() {
+				Text = " Scan Credit Card ", 
 				FontAttributes = FontAttributes.Bold,
 				FontSize = 18,
 				BackgroundColor = Color.White, 
@@ -54,7 +55,10 @@ namespace XamFormsCardIO
 				WidthRequest = 300, 
 				HeightRequest = 60, 
 			};
-			rootLayout.Children.Add(btnAddPaymentMethod);
+			rootLayout.Children.Add(btnScanCreditCard);
+
+			txtCreditCardNumber = new Entry ();
+			rootLayout.Children.Add(txtCreditCardNumber);
 
 
 			scrollview.Content = rootLayout;
