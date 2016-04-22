@@ -18,16 +18,44 @@ namespace XamFormsCardIO
 
 			btnScanCreditCard.Clicked += (sender, args) =>
 			{
-				Navigation.PushModalAsync (new CreditCardEntryPage ());
+
+				var ccPage = new CreditCardEntryPage();
+
+
+				ccPage.ScanCancelled += HandleScanCancelled;
+				ccPage.ScanSucceeded += HandleScanSucceeded;
+
+				Navigation.PushModalAsync (ccPage);
 			};
 
-			MessagingCenter.Subscribe<CreditCard_PCL> (this, "AndroidCreditCardReceived", (sender) => {
-				// Do something whenever the "AndroidCreditCardReceived" message is sent.
+			MessagingCenter.Subscribe<CreditCard_PCL> (this, "CreditCardScanSuccess", (sender) => {
+				// Do something whenever the "iOSCreditCardReceived" message is sent.
 				// We could fill in CCV and expiration date things here, whatever else we need.
 				// This is enough to show capability, however.
 				txtCreditCardNumber.Text = sender.cardNumber;
+				Navigation.PopModalAsync();
 			});
 
+			MessagingCenter.Subscribe<CreditCard_PCL> (this, "CreditCardScanCancelled", (sender) => {
+				// Do something whenever the "CreditCardCancelled" message is sent.
+				Navigation.PopModalAsync();
+			});
+
+
+		}
+
+		// not implemented, as I'm not sure how to finish this out.
+		private async void HandleScanSucceeded(object sender, EventArgs e)
+		{
+			//await Navigation.PopModalAsync();
+			string testString = "1212";
+		}
+
+		// not implemented, as I'm not sure how to finish this out.
+		private async void HandleScanCancelled(object sender, EventArgs e)
+		{
+			string testString = "1212";
+			//await Navigation.PopModalAsync();
 		}
 
 

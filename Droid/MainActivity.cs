@@ -29,6 +29,9 @@ namespace XamFormsCardIO.Droid
 		{
 			base.OnActivityResult(requestCode, resultCode, data);
 
+			// Feel free to extend the CreditCard_PCL object to include more than what's here.
+			CreditCard_PCL ccPCL = new CreditCard_PCL ();
+
 			if (data != null) {
 
 				// Be sure to JavaCast to a CreditCard (normal cast won't work)		 
@@ -36,19 +39,15 @@ namespace XamFormsCardIO.Droid
 
 				Console.WriteLine ("Scanned: " + card.FormattedCardNumber);
 
-				// Feel free to extend the CreditCard_PCL object to include more than what's here.
-				CreditCard_PCL ccPCL = new CreditCard_PCL();
 				ccPCL.cardNumber = card.CardNumber;
 				ccPCL.ccv = card.Cvv;
 				ccPCL.expr = card.ExpiryMonth.ToString () + card.ExpiryYear.ToString ();
 
-				Xamarin.Forms.MessagingCenter.Send<CreditCard_PCL>(ccPCL, "AndroidCreditCardReceived");
+				Xamarin.Forms.MessagingCenter.Send<CreditCard_PCL> (ccPCL, "CreditCardScanSuccess");
 
+			} else {
+				Xamarin.Forms.MessagingCenter.Send<CreditCard_PCL> (ccPCL, "CreditCardScanCancelled");
 			}
-
-			// Not sure if this is the best way to handle this, but it seems to work well.
-			// Finish() closes the whole app, and we don't want that.
-			base.OnBackPressed ();
 
 		}
 
