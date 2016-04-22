@@ -7,3 +7,9 @@ As of April 2016, this repo works on Android and iOS. By using a custom renderer
 The implementation is simple - The Card.IO launches when the user taps 'scan credit card', and it returns a filled CreditCard_PCL object if the user actually completed the dialog. The app can then do what it needs to with the credit card number (send it on to Stripe or whoever).
 
 Using Custom Renderers has the benefit of allowing to keep up with modifications to the Card.IO components for each platform without much effort. Plus maybe I can learn a thing or 2 about using native rendered pages in Xamarin forms.
+
+
+Problems: 
+1) For some reason on iOS, the form keeps re-appearing after it is closed. I added a check to a bViewAlreadyDisappeared variable, so it doesn't happen now. I don't know the root cause.
+
+2) I can't figure out how to get a reference to the CreditCardEntryPage in Android. If we could figure that out, then I can get rid of the 'MessagingCenter' calls and just be event based. As it stands now, the OnScanSucceeded and OnScanCancelled events are never raised.

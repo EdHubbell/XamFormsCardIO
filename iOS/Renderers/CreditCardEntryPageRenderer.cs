@@ -20,13 +20,12 @@ namespace XamFormsCardIO.iOS
 		{
 		}
 
-		protected override void OnElementChanged (ElementChangedEventArgs<Page> e)
+		protected override void OnElementChanged (VisualElementChangedEventArgs e)
 		{
 			base.OnElementChanged (e);
-
-			//ccPage = e.NewElement as CreditCardEntryPage;
-
+			ccPage = e.NewElement as CreditCardEntryPage;
 		}
+
 			
 		public override void ViewDidAppear (bool animated)
 		{
@@ -36,16 +35,22 @@ namespace XamFormsCardIO.iOS
 			// by checking bViewAlreadyDisappeared.
 			if (bViewAlreadyDisappeared) return;
 
-			var paymentDelegate = new CardIOPaymentViewControllerDg();
+			var paymentDelegate = new CardIOPaymentViewControllerDg(ccPage);
 
 			// Create and Show the View Controller
 			var paymentViewController = new CardIOPaymentViewController(paymentDelegate);
 
-			paymentViewController.CollectExpiry = true;
-			paymentViewController.CollectCVV = true;
-			paymentViewController.CollectPostalCode = false;
+			paymentViewController.CollectExpiry = ccPage.cardIOConfig.RequireExpiry;
+			paymentViewController.CollectCVV = ccPage.cardIOConfig.RequireCvv;
+			paymentViewController.CollectPostalCode = ccPage.cardIOConfig.RequirePostalCode;
+			paymentViewController.HideCardIOLogo = ccPage.cardIOConfig.HideCardIOLogo;
+			paymentViewController.CollectCardholderName = ccPage.cardIOConfig.CollectCardholderName;
+
+			if (!string.IsNullOrEmpty(ccPage.cardIOConfig.Localization))paymentViewController.LanguageOrLocale = ccPage.cardIOConfig.Localization;
+			if (!string.IsNullOrEmpty(ccPage.cardIOConfig.ScanInstructions))paymentViewController.ScanInstructions = ccPage.cardIOConfig.ScanInstructions;
+					
+			// Not sure if this needs to be diabled, but it doesn't seem like something I want to do.
 			paymentViewController.AllowFreelyRotatingCardGuide = false;
-			paymentViewController.HideCardIOLogo = false;
 
 			// Display the card.io interface
 			PresentViewController(paymentViewController,true, null);
@@ -56,46 +61,47 @@ namespace XamFormsCardIO.iOS
 		{
 			base.ViewDidDisappear (animated);
 			bViewAlreadyDisappeared = true;
-
 		}
-			
+						
 	}
 
 	public class CardIOPaymentViewControllerDg: CardIOPaymentViewControllerDelegate
 	{ 
+		private CreditCardEntryPage ccPage; 
+		private CreditCard_PCL ccPCL = new CreditCard_PCL();
 
-		public CardIOPaymentViewControllerDg(){
+		public CardIOPaymentViewControllerDg( CreditCardEntryPage ccEntryPage){
+			ccPage = ccEntryPage;
 		}
 
 		public override void UserDidCancelPaymentViewController (CardIOPaymentViewController paymentViewController)
 		{
-			Console.WriteLine("Scanning Canceled!");
+			// Console.WriteLine("Scanning Canceled!");
 			paymentViewController.DismissViewController(true, null);
-
-			// Feel free to extend the CreditCard_PCL object to include more than what's here.
-			CreditCard_PCL ccPCL = new CreditCard_PCL();
-
+			// ccPage.OnScanCancelled();
 			Xamarin.Forms.MessagingCenter.Send<CreditCard_PCL>(ccPCL, "CreditCardScanCancelled");
-
 		}
 		public override void UserDidProvideCreditCardInfo (CreditCardInfo card, CardIOPaymentViewController paymentViewController)
 		{
 			paymentViewController.DismissViewController(true, null);        
 
-			CreditCard_PCL ccPCL = new CreditCard_PCL();
-
 			if (card == null) {
 				Console.WriteLine("Scanning Canceled!");
 
+				//ccPage.OnScanCancelled();
 				Xamarin.Forms.MessagingCenter.Send<CreditCard_PCL>(ccPCL, "CreditCardScanCancelled");
 			
 			} else {
-				Console.WriteLine("Card Scanned: " + card.CardNumber);
+				//Console.WriteLine("Card Scanned: " + card.CardNumber);
+
 				// Feel free to extend the CreditCard_PCL object to include more than what's here.
 				ccPCL.cardNumber = card.CardNumber;
 				ccPCL.ccv = card.Cvv;
 				ccPCL.expr = card.ExpiryMonth.ToString () + card.ExpiryYear.ToString ();
+				ccPCL.redactedCardNumber = card.RedactedCardNumber;
+				ccPCL.cardholderName = card.CardholderName; 
 
+				//ccPage.OnScanSucceeded (ccPCL);
 				Xamarin.Forms.MessagingCenter.Send<CreditCard_PCL>(ccPCL, "CreditCardScanSuccess");
 
 			}   
@@ -103,7 +109,6 @@ namespace XamFormsCardIO.iOS
 		}
 
 	}
-
-
+		
 }
 

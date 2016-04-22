@@ -29,6 +29,7 @@ namespace XamFormsCardIO.Droid
 		{
 			base.OnActivityResult(requestCode, resultCode, data);
 
+
 			// Feel free to extend the CreditCard_PCL object to include more than what's here.
 			CreditCard_PCL ccPCL = new CreditCard_PCL ();
 
@@ -37,11 +38,13 @@ namespace XamFormsCardIO.Droid
 				// Be sure to JavaCast to a CreditCard (normal cast won't work)		 
 				var card = data.GetParcelableExtra (CardIOActivity.ExtraScanResult).JavaCast<CreditCard> ();
 
-				Console.WriteLine ("Scanned: " + card.FormattedCardNumber);
+				Console.WriteLine ("Scanned: " + card.RedactedCardNumber);
 
 				ccPCL.cardNumber = card.CardNumber;
 				ccPCL.ccv = card.Cvv;
 				ccPCL.expr = card.ExpiryMonth.ToString () + card.ExpiryYear.ToString ();
+				ccPCL.redactedCardNumber = card.RedactedCardNumber;
+				ccPCL.cardholderName = card.CardholderName;
 
 				Xamarin.Forms.MessagingCenter.Send<CreditCard_PCL> (ccPCL, "CreditCardScanSuccess");
 
