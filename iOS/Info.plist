@@ -40,5 +40,7 @@
 	</array>
 	<key>XSAppIconAssets</key>
 	<string>Resources/Images.xcassets/AppIcons.appiconset</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Camera used to scan credit cards</string>
 </dict>
 </plist>
